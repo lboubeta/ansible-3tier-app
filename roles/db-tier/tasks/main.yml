@@ -1,21 +1,24 @@
 ---
 
-- name: install postgres packages
-  yum:
+- name: Install postgres packages
+  ansible.builtin.yum:
     name: postgresql-server
     state: latest
+
 - name: Check if PostgreSQL database is initialized.
-  stat:
+  ansible.builtin.stat:
     path: "{{ pg_data }}"
   register: pgdata_dir_version
+
 - name: Perform PostgreSQL database initialization if required.
-  command: postgresql-setup initdb
+  ansible.builtin.command: postgresql-setup initdb
   when: not pgdata_dir_version.stat.exists
   notify:
-    - restart_postgresql
-- name: start PostgreSQL service and enable PostgreSQL to start at boot time
-  service:
+    - Restart_postgresql
+
+- name: Start PostgreSQL service and enable PostgreSQL to start at boot time
+  ansible.builtin.service:
     name: postgresql.service
-    enabled: yes
+    enabled: true
   notify:
-    - restart_postgresql
+    - Restart_postgresql

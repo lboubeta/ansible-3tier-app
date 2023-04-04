@@ -1,6 +1,6 @@
 ---
 # handlers file for good-ansible
-- name: restart_haproxy
-  service:
+- name: Restart_haproxy
+  ansible.builtin.service:
     name: haproxy.service
     state: restarted

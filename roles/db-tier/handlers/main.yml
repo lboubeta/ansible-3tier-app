@@ -1,6 +1,6 @@
 ---
 # handlers file for db-tier
-- name: restart_postgresql
-  service:
+- name: Restart_postgresql
+  ansible.builtin.service:
     name: postgresql.service
     state: restarted

@@ -27,15 +27,15 @@
   gather_facts: false
   tasks:
     - name: Check frontend(s) is responding on port 80
-      uri:
+      ansible.builtin.uri:
         url: "http://{{ item }}"
-        return_content: yes
+        return_content: true
       register: webpage
       with_items:
         - "{{ groups['AnsibleGroup_frontends'] }}"
 
     - name: Fail if the page content does not have <Ansible has done its job>
-      fail:
+      ansible.builtin.fail:
       when: '"Ansible has done its job - Welcome to Tomcat" not in item.content'
       with_items: "{{ webpage.results }}"
 

@@ -1,23 +1,26 @@
 ---
 # tasks file for app-tier
-- name: install tomcat packages
-  yum:
+- name: Install tomcat packages
+  ansible.builtin.yum:
     name: tomcat
     state: latest
-- name: create tomcat ROOT directory
-  file:
+
+- name: Create tomcat ROOT directory
+  ansible.builtin.file:
     path: "{{ webapps }}/ROOT"
     state: directory
-- name: copy index.html to tomcat webapps ROOT"
-  template:
+
+- name: Copy index.html to tomcat webapps ROOT"
+  ansible.builtin.template:
     src: index.html.j2
     dest: "{{ webapps }}/ROOT/index.html"
     mode: 0644
   notify:
-    - restart_tomcat
-- name: start Tomcat service and enable Tomcat to start at boot time
-  service:
+    - Restart_tomcat
+
+- name: Start Tomcat service and enable Tomcat to start at boot time
+  ansible.builtin.service:
     name: tomcat.service
-    enabled: yes
+    enabled: true
   notify:
-    - restart_tomcat
+    - Restart_tomcat
