@@ -1,0 +1,47 @@
+---
+
+- hosts: localhost
+  gather_facts: false
+  tasks:
+
+    - name: Deploy a new VM based on template
+      vmware.vmware_rest.vcenter_vmtemplate_libraryitems:
+        name: "{{ vm_name }}"
+        library: '{{ library_id }}'
+        template_library_item: '{{ template_id }}'
+        placement:
+          cluster: "{{ cluster }}"
+          folder: "{{ folder }}"
+          resource_pool: "{{ resource_pool }}"
+        state: deploy
+        powered_on: truevsc
+      register: my_vm
+
+    - name: Search new Virtual Machine
+      vmware.vmware_rest.vcenter_vm_info:
+        filter_names: "{{ vm_name }}"
+      register: data
+
+    - debug: msg="{{ data }}"
+
+    - name: Get guest identity information
+      vmware.vmware_rest.vcenter_vm_guest_identity_info:
+        vm: '{{ data.value[0].vm }}'
+      register: _result
+      until: _result.value.ip_address is defined
+      retries: 10
+      delay: 10
+
+    - name: Update VMware inventory source
+      awx.awx.inventory_source_update:
+        name: "VMware Inventory Source"
+        inventory: "VMware Inventory"
+        organization: Default
+
+    - name: Deploy a new VM based on template
+      community.vmware.vmware_guest:
+        name: "{{ vm_name }}"
+        template: "{{ template_id }}"
+        folder: "{{ folder }}"
+        state: present
+      register: my_vm
